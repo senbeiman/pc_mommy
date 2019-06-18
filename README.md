@@ -10,7 +10,7 @@
 1. リアルお母さん的な存在の人にSlackで通知を送って監視してもらえる
 
 ## 使用言語＆ライブラリ
-Python+Tkinter+ctypes
+Python+Tkinter+ctypes+slackweb
 
 ## 使い方
 通知先のSlack用WebHooks URLを設定する．
