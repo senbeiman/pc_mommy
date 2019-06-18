@@ -330,7 +330,7 @@ class Application(ttk.Frame):
 '''
 def main():
     root = tk.Tk()
-    root.title("睡眠管理アプリ　PC母ちゃん")
+    root.title("夜更かし防止アプリ　PC母ちゃん")
     app = Application(root)  # アプリケーションインスタンス生成
     root.update_idletasks()
     root.geometry("+{0:}+{1:}".format(str(root.winfo_screenwidth()//2-root.winfo_width()//2),
