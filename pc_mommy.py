@@ -160,10 +160,10 @@ class Application(ttk.Frame):
     CHECK_CYCLEの時間おきに各処理を行う
     '''
     def check_time(self):
-        self.check_sleep_time()
         if len(self.penalty_endtimes) > 0:
             self.check_penalty_time()
             self.kill_running_file()
+        self.check_sleep_time()
         self.after(CHECK_CYCLE, self.check_time)
         if DEBUG_MODE:
             print("noticed_flag:",self.noticed_flag,
