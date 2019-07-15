@@ -10,7 +10,7 @@ SLEEP_WAIT = 10000  # 就寝時刻になってからスリープまでの猶予�
 CHECK_CYCLE = 10000  # 就寝時刻かどうか確認するサイクル(ms)
 AWAKE_TIME = "06:00"  # スリープを解除する時刻
 HOSTS_FILEPATH = "C:/Windows/system32/drivers/etc/HOSTS"  # HOSTSファイルのパス
-DEFAULT_EXE = "Solitaire.exe"
+DEFAULT_EXE = "LeagueClient.exe"
 DEFAULT_HOST = "www.youtube.com"
 DEFAULT_WEBHOOK_URL = "https://hooks.slack.com/services/******/"  # Slack通知用URLのデフォルト値
 
@@ -196,13 +196,15 @@ class Application(ttk.Frame):
         time_remind = ":".join([str(h).zfill(2), str(m).zfill(2)])  # 目標時刻1時間前を文字列で表現する
         if time_now == time_sleep:
             self.sleeping_flag = True
+        if time_now == "10:00":
+            self.sleep_PC()
         if time_now == AWAKE_TIME:
             self.sleeping_flag = False
             self.boosting_flag = False
             self.sleep_notice_flag = False
         if self.sleeping_flag and not self.boosting_flag:
             self.message_sleep()
-            self.after(SLEEP_WAIT, self.sleep_PC)
+            self.after(SLEEP_WAIT, self.confirm_sleep_PC)
             self.noticed_flag = False
         elif time_now == time_remind and not self.noticed_flag:
             self.message_remind()
@@ -303,19 +305,22 @@ class Application(ttk.Frame):
     '''
     強制スリープ＆ロックの実行
     '''
-    def sleep_PC(self):
+    def confirm_sleep_PC(self):
         if self.sleeping_flag and not self.boosting_flag:
-            DISPLAY_OFF = 2
-            HWND_BROADCAST = 0xffff
-            WM_SYSCOMMAND = 0x0112
-            SC_MONITORPOWER = 0xf170
+            self.sleep_PC()
 
-            windll.user32.PostMessageA(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, DISPLAY_OFF)  # スリープする
-            windll.user32.LockWorkStation()  # ロックする
-            if not self.sleep_notice_flag:
-                slack = slackweb.Slack(url=self.webhook_var.get())
-                slack.notify(text=self.computer_name+"をスリープさせておいたわ")  # Slackへ通知
-                self.sleep_notice_flag = True
+    def sleep_PC(self):
+        DISPLAY_OFF = 2
+        HWND_BROADCAST = 0xffff
+        WM_SYSCOMMAND = 0x0112
+        SC_MONITORPOWER = 0xf170
+
+        windll.user32.PostMessageA(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, DISPLAY_OFF)  # スリープする
+        windll.user32.LockWorkStation()  # ロックする
+        if not self.sleep_notice_flag:
+            slack = slackweb.Slack(url=self.webhook_var.get())
+            slack.notify(text=self.computer_name+"をスリープさせておいたわ")  # Slackへ通知
+            self.sleep_notice_flag = True
     '''
     メイン画面を閉じるときにSlackへの通知を行うため1クッションはさむ
     '''
